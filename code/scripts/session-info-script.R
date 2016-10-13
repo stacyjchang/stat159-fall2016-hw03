@@ -1,5 +1,6 @@
-sink("../eda-script.txt")
-print(library("corrplot"))
+library("testthat")
+sink("../session-info.txt")
+sessionInfo()
 sink()
 
 

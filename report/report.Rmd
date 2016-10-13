@@ -1,0 +1,116 @@
+---
+title: "Multiple Regression Analysis"
+author: "Stacy J Chang"
+date: "10/14/2016"
+output: pdf_document
+---
+##Abstract
+
+Fall 2016 Statistics 159, Reproducible and Collaborative Statistical Data Science, homework three introduced multiple regrssion analysis. This report utilized the Advertising data that was provided to reproduce the results displayed in Chapter 3.2, _Multiple Linear Regression_, of the text book, _An Introduction to Statistical Learning_ written by Gareth James, Daniela Witten, Trevor Hastie and Robert Tibshirani. The report focuses on the regression relationships of values `TV`, `Radio`, and `Newspaper`on `Sales`.
+
+##Introduction
+
+The overarching goal of this homework is for the students to get familiarized with multiple linear regression, a powerful tool to analysize data.
+
+##Data
+
+The Advertising data that used in this report was provided through [this](http://www-bcf.usc.edu/~gareth/ISL/Advertising.csv), which is part of the textbook, _An Introduction to Statistical Learning_ written by Gareth James, Daniela Witten, Trevor Hastie and Robert Tibshirani. Here is a small section of the Advertising data:
+```{r echo = FALSE}
+ad <- read.csv("http://www-bcf.usc.edu/~gareth/ISL/Advertising.csv")
+head(ad)
+```
+The data represent `Sales`  through three different media: `TV`, `Radio`, and `Newspaper`, in 200 different markets. The data that the paper focuses on are the **Sales** and **TV** data points. **Sales** data represents the total amount of profit, in thousands of units. While **TV** reflects the cost, in thousands of units, in total spent on TV advertisement. 
+
+##Methodology
+
+_Multiple linear regression_ is an useful approach for estimating a quantitative response _Y_ on an independent variable _X_. The regression assumes that there is a linear relationship between _Y_ and _X_. The regression is usually model after this simple equation:
+
+\begin{equation}
+Y_i \approx {\beta}_0 + {\beta}_1 X_i
+\end{equation}
+
+####_Estimating the Coefficients_
+
+In this paper, we concentrated on one particular media platform, which is TV, and its relationship with **Sales**. The linear model that the we perform the simple linear regression on is:
+
+\begin{equation}
+Sales \approx \hat{\beta}_0 + \hat{\beta}_1 TV
+\end{equation}
+
+In order to accurately estimate $\hat{\beta}_0$ and $\hat{\beta}_1$ that fit our linear model, we needed to use the 200 samples that are given in the data. Ultimately, our goal is to fine the _closeness_ between $\hat{\beta}_0$ and $\hat{\beta}_1$ and _n_ = 200 different markets. We have to find an intercept of $\hat{\beta}_0$ and a slope $\hat{\beta}_1$ such that the resulting line is as close to the _n_ = 200 data points. 
+
+We used _residual sum of squares_ (RSS) to estimate the least squares fit for the regression. Let $\hat{Y}_i = \hat{\beta}_0 + \hat{\beta}_1 X_i$ be the prediction of _Y_, and the _i_th _residuals_ is $e_i = y_i - y_i$. _Residual sum of squares_ (RSS) is:
+
+\begin{equation}
+RSS = e_1^2 + e_2^2 + \cdots + e_3^2
+\end{equation}
+
+Utilizing this knowledge, we found that $\hat{\beta}_0$ = 7.03 and $\hat{\beta}_1$ = 0.0.475. These values translate to that with an additional of $1000 spent on TV advertisement is associated with selling approximately 47.5 additional units of product. 
+
+####_Assesing the Accuracy of the Coefficients Estimates_
+
+The observed $\beta$ values can be used to come up with a hypothesis test on whether or not there is a relationship between _X_ and _Y_. Our null hypothesis would be that there is no relationship between the two variables and we perform a _t-test_ in order to test the hypothesis:
+
+\begin{equation}
+t = \hat{\beta_1} - 0 / SE(\beta_1)
+\end{equation}
+
+The result of the above equation is the p-value. With a small p-value, typically less than 0.05, we would be able to reject our nulll hypothesis and conclude that there is a relationship between the two variables.
+
+####_RSE_
+
+RSE or _residual standard error_ estimates the standard error or the given model. The equation for it is:
+
+\begin{equation}
+\sqrt( 1/ (n-2) * \sum_{i=1}^n (y_i - yhat_i)^2)
+\end{equation}
+
+####_R^2_
+
+R^2 value measures how close the data are to the fitted regression line. The value of R62 lies between zero and one.  equation of R^2 is:
+
+\begin{equation}
+R^2 = (TSS - RSS) / TSS
+\end{equation}
+
+##Results
+
+The result that we obtain for $\hat{\beta}_0$ and $\hat{\beta}_1$ is described in the below table:
+
+|           | Estimate | Std. Error | t value | P-value |
+| :-------- | :------: | :--------: | :-----: | -------: |
+(Intercept) | 7.03     | 0.46       | 15.36   | < 0.0001 |
+TV          | 0.05     | 0.00       | 17.67   | < 0.0001 |
+
+Table: Information about Regression Coefficients
+
+As one can see, the p-values are all less than 0.0001, which means that we can reject the null hypothesis, in other words, there is a relationship between _X_ and _Y_.
+
+The table below describes additional information about the least squares model for the regression:
+
+Quantity | Value 
+--- | ---
+RSE | 3.26
+R2 | 0.61
+F-stat | 312.14
+
+Table: Regression Quality Indices
+
+The RSE value is about 3.26, which means that on average actual sales in each market deviate from the true regression line by approximately 3,260 units. 
+
+Below is the scatterplot showing the relationship between **Sales** and **TV**:
+
+```{r echo = FALSE}
+ad_regression <- lm(ad$Sales ~ ad$TV)
+sum_regression <- summary(ad_regression)
+plot(ad$TV, ad$Sales, las = 1, pch = 19, col = "#555555", main = "Sales vs TV", xlab = "TV", ylab = "Sales")
+abline(ad_regression, col = "#0000DD59", lwd = 2)
+```
+
+Figure 1: Scatterplot of **Sales** and **TV** with fitted line
+
+As one can see the positive slope of the regression line placed in the center of the data points, which means there is a positive correlation with the two variables.  
+
+##Conclusions
+
+In conclusion, using simple linear regression model we found the relationship between **Sales** and **TV** advertisement. We conclude that approximately with an increase of $1000 spendingi in TV advertisment is equalvilant as selling approximately 47.5 units of product. With an relatively easy linear regression model, we were able to predict and estimate powerful data that are essential to successfully analysize the data. The linear regression relationship between _X_ and _Y_ variables is the key aspect to the paper. 
