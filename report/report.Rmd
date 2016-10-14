@@ -6,111 +6,82 @@ output: pdf_document
 ---
 ##Abstract
 
-Fall 2016 Statistics 159, Reproducible and Collaborative Statistical Data Science, homework three introduced multiple regrssion analysis. This report utilized the Advertising data that was provided to reproduce the results displayed in Chapter 3.2, _Multiple Linear Regression_, of the text book, _An Introduction to Statistical Learning_ written by Gareth James, Daniela Witten, Trevor Hastie and Robert Tibshirani. The report focuses on the regression relationships of values `TV`, `Radio`, and `Newspaper`on `Sales`.
+Fall 2016 Statistics 159, Reproducible and Collaborative Statistical Data Science, homework three introduced multiple regrssion analysis. This report utilized the Advertising data that was provided to reproduce the results displayed in Chapter 3.1 and 3.2, _Multiple Linear Regression_, of the text book, _An Introduction to Statistical Learning_ written by Gareth James, Daniela Witten, Trevor Hastie and Robert Tibshirani. The report focuses on the regression relationships of values `TV`, `Radio`, and `Newspaper`on `Sales`.
 
 ##Introduction
 
-The overarching goal of this homework is for the students to get familiarized with multiple linear regression, a powerful tool to analysize data.
+The overarching goal of this homework is for the students to get familiarized with multiple linear regression, a powerful tool to analysize data. Rather with only one predictor in simple linear regression, multiple regression analysis allows us to examine multple predictors. Through simple linear regression, we can run three different and separate regressions each using one of the three `Advertising` mediums as a predictor. However, with this type of approach there is no way to accurately predict of sales given three different levels of predictors, since each of the budgets is associated with a separate regression equation. In addition, each individual regression ignores the other two regressions in computing the regression coefficients. Thus extending the simple regression model is the best way to solve the problem.
 
 ##Data
 
-The Advertising data that used in this report was provided through [this](http://www-bcf.usc.edu/~gareth/ISL/Advertising.csv), which is part of the textbook, _An Introduction to Statistical Learning_ written by Gareth James, Daniela Witten, Trevor Hastie and Robert Tibshirani. Here is a small section of the Advertising data:
-```{r echo = FALSE}
-ad <- read.csv("http://www-bcf.usc.edu/~gareth/ISL/Advertising.csv")
-head(ad)
-```
-The data represent `Sales`  through three different media: `TV`, `Radio`, and `Newspaper`, in 200 different markets. The data that the paper focuses on are the **Sales** and **TV** data points. **Sales** data represents the total amount of profit, in thousands of units. While **TV** reflects the cost, in thousands of units, in total spent on TV advertisement. 
+The Advertising data that used in this report was provided through [this data set](http://www-bcf.usc.edu/~gareth/ISL/Advertising.csv), which is part of the textbook, _An Introduction to Statistical Learning_ written by Gareth James, Daniela Witten, Trevor Hastie and Robert Tibshirani. The data represent `Sales`  through three different media: `TV`, `Radio`, and `Newspaper`, in 200 different markets. `Sales` data represents the total amount of profit, in thousands of units. While `TV`, `Radio`, and `Newspaper` reflect the cost, in thousands of units, in total spent on three different mediums of advertisemen. We first examined each the individual variables, for example: 
+
+![The shpae of the histogram is relatively bell shaped.](../images/histogram-sales.png)
+
+![The frequencies of TV is relatively even throughout.](../images/histogram-tv.png)
+
 
 ##Methodology
 
-_Multiple linear regression_ is an useful approach for estimating a quantitative response _Y_ on an independent variable _X_. The regression assumes that there is a linear relationship between _Y_ and _X_. The regression is usually model after this simple equation:
+Relationship between two variables are usually more complex than linear model, thus multiple regression is the best way to predict the relationship between variables. The equation for multiple regressio is the following, $$ Y = \beta_{0} + \beta_{1}X_{1} + \beta_{2}X{2} + \cdots + \beta_{p}X{p} + \epsilon $$. This `Advertising` report utilizes the model as following: $$ Sales = \beta_{0} + \beta_{1}TV + \beta_{2}Radio + \beta_{3}Newspaper + \epsilon $$. Then we further looked at other values such as R-squared, F-statistics, residual standard error of the multiple regression analysis. _X_ is the _j_th predictor and $\beta_{j}$ represents the correlation between the predictors and the response. $\beta_{j}$ also can be interpreted as the _average_ effect on _Y_ of a one unit increase in _X_. Thus positive $\beta$ value means that there is an positive correlation between the two focuesed variable. In addition to how strong the correlation is, _significance_ is also another important aspect in determining the fit of the model. 
 
-\begin{equation}
-Y_i \approx {\beta}_0 + {\beta}_1 X_i
-\end{equation}
-
-####_Estimating the Coefficients_
-
-In this paper, we concentrated on one particular media platform, which is TV, and its relationship with **Sales**. The linear model that the we perform the simple linear regression on is:
+From a simple linear regression example between `Sales` and `TV`
 
 \begin{equation}
 Sales \approx \hat{\beta}_0 + \hat{\beta}_1 TV
 \end{equation}
 
-In order to accurately estimate $\hat{\beta}_0$ and $\hat{\beta}_1$ that fit our linear model, we needed to use the 200 samples that are given in the data. Ultimately, our goal is to fine the _closeness_ between $\hat{\beta}_0$ and $\hat{\beta}_1$ and _n_ = 200 different markets. We have to find an intercept of $\hat{\beta}_0$ and a slope $\hat{\beta}_1$ such that the resulting line is as close to the _n_ = 200 data points. 
-
-We used _residual sum of squares_ (RSS) to estimate the least squares fit for the regression. Let $\hat{Y}_i = \hat{\beta}_0 + \hat{\beta}_1 X_i$ be the prediction of _Y_, and the _i_th _residuals_ is $e_i = y_i - y_i$. _Residual sum of squares_ (RSS) is:
-
-\begin{equation}
-RSS = e_1^2 + e_2^2 + \cdots + e_3^2
-\end{equation}
-
-Utilizing this knowledge, we found that $\hat{\beta}_0$ = 7.03 and $\hat{\beta}_1$ = 0.0.475. These values translate to that with an additional of $1000 spent on TV advertisement is associated with selling approximately 47.5 additional units of product. 
-
-####_Assesing the Accuracy of the Coefficients Estimates_
-
-The observed $\beta$ values can be used to come up with a hypothesis test on whether or not there is a relationship between _X_ and _Y_. Our null hypothesis would be that there is no relationship between the two variables and we perform a _t-test_ in order to test the hypothesis:
-
-\begin{equation}
-t = \hat{\beta_1} - 0 / SE(\beta_1)
-\end{equation}
-
-The result of the above equation is the p-value. With a small p-value, typically less than 0.05, we would be able to reject our nulll hypothesis and conclude that there is a relationship between the two variables.
-
-####_RSE_
-
-RSE or _residual standard error_ estimates the standard error or the given model. The equation for it is:
-
-\begin{equation}
-\sqrt( 1/ (n-2) * \sum_{i=1}^n (y_i - yhat_i)^2)
-\end{equation}
-
-####_R^2_
-
-R^2 value measures how close the data are to the fitted regression line. The value of R62 lies between zero and one.  equation of R^2 is:
-
-\begin{equation}
-R^2 = (TSS - RSS) / TSS
-\end{equation}
+In order to accurately estimate $\hat{\beta}_0$ and $\hat{\beta}_1$ that fit our linear model, we needed to use the 200 samples that are given in the data. Ultimately, our goal is to fine the _closeness_ between $\hat{\beta}_0$ and $\hat{\beta}_1$ and _n_ = 200 different markets. We have to find an intercept of $\hat{\beta}_0$ and a slope $\hat{\beta}_1$ such that the resulting line is as close to the _n_ = 200 data points. Same goes for the purpose of this multiple regression paper. Other values that we also look at in order to determine significance are R-squared, F-statistics, and residual standard error. 
 
 ##Results
 
-The result that we obtain for $\hat{\beta}_0$ and $\hat{\beta}_1$ is described in the below table:
+Firstly, we can look at the scatterplot matrix between the relationships between all the variables and observe how accurate the model actually is.
 
-|           | Estimate | Std. Error | t value | P-value |
-| :-------- | :------: | :--------: | :-----: | -------: |
-(Intercept) | 7.03     | 0.46       | 15.36   | < 0.0001 |
-TV          | 0.05     | 0.00       | 17.67   | < 0.0001 |
+![Scatterplot matrix with all variables](../images/scatterplot-matrix.png)
 
-Table: Information about Regression Coefficients
-
-As one can see, the p-values are all less than 0.0001, which means that we can reject the null hypothesis, in other words, there is a relationship between _X_ and _Y_.
-
-The table below describes additional information about the least squares model for the regression:
-
-Quantity | Value 
---- | ---
-RSE | 3.26
-R2 | 0.61
-F-stat | 312.14
-
-Table: Regression Quality Indices
-
-The RSE value is about 3.26, which means that on average actual sales in each market deviate from the true regression line by approximately 3,260 units. 
-
-Below is the scatterplot showing the relationship between **Sales** and **TV**:
+Through the scatterplots in the above plot, we can grasp an idea of how each predictor interact with the target. Whether it has a positive or negative correlation reflect how all the scatte data points are presented in each plot. Then we can look at individual plot. Here is an coorelation matrix that show each predictor and target correlation in quantitative form.
 
 ```{r echo = FALSE}
-ad_regression <- lm(ad$Sales ~ ad$TV)
-sum_regression <- summary(ad_regression)
-plot(ad$TV, ad$Sales, las = 1, pch = 19, col = "#555555", main = "Sales vs TV", xlab = "TV", ylab = "Sales")
-abline(ad_regression, col = "#0000DD59", lwd = 2)
+load("../data/correlation-matrix.RData")
+library(pander)
+pander(matrix_cor, caption = "Correlation Matrix")
 ```
 
-Figure 1: Scatterplot of **Sales** and **TV** with fitted line
+Looking at the correlation table, one can see that there is no apparent relationship between all the predcitors, such as `TV` and `Newspaper`. However there are strong correlation between `Sales` and the three advertising mediums. Let's look at them closely individually.
 
-As one can see the positive slope of the regression line placed in the center of the data points, which means there is a positive correlation with the two variables.  
+![This is the correlation between `Sales` and `TV`. One can clearly see a positive slope with the scatter plot data points. Even though it looks linear, the relationship is not truly linear.](../images/scatterplot-tv-sales.png)
+
+![The relationship between `Sales` and `Radio` is also positive, the data points are more spread out.](../images/scatterplot-radio-sales.png)
+
+![Even though the regression is positive, there is not much of a relationship. Most of the data points are scattered throughout the left side of the plot](../images/scatterplot-newspaper-sales.png)
+
+After the simple linear regression between `Sales` and each of the three mediums of advertisement `lm(Sales ~)`, we computed the multiple regression of all predictors and the target. Here is the quantitative form of the regression analysis.
+
+```{r echo = FALSE}
+load("../data/regression.Rdata")
+library(pander)
+pander(regression, caption = "Multiple Regressions on Sales")
+```
+
+Additionally, we can look at the other values such as R-squared, F-statistics, and residual standard error to determine how "fit" the model is. Looking at the table above, we can see that there is a significance for the relationship between `TV` and `Sales` and `Radio` and `Sales`, due to the small p-values that are shown. However `Newspaper` and `Sales` do not have a significant relationsihp because the large p-value. The $\beta$ values for both `TV` and `Radio` are positive and quite small. We can further look into other statistics.
+
+
+```{r echo = FALSE}
+source("../code/functions/regression-functions.R")
+library(xtable)
+
+r_2 <- r_squared(regression)
+f <- f_statistic(regression)
+rse <- residual_std_error(regression)
+stat <- data.frame(Quantity = c("R-squared", "F-statistic", "Residual Standard Error"), Value = c(r_2, f, rse))
+print(xtable(stat,  caption = "Multiple Regression Statistics"), comment = FALSE, caption.placement = 'top', include.rownames = FALSE)
+```
+
+Looking at the statistics, we can see that our model does not really "fit" with the data. Here is an visual representation. 
+
+![As you can see, the regression line is not linear, but a curved shaped. This shows that the model is not an linear model](../images/residual-plot.png)
 
 ##Conclusions
 
-In conclusion, using simple linear regression model we found the relationship between **Sales** and **TV** advertisement. We conclude that approximately with an increase of $1000 spendingi in TV advertisment is equalvilant as selling approximately 47.5 units of product. With an relatively easy linear regression model, we were able to predict and estimate powerful data that are essential to successfully analysize the data. The linear regression relationship between _X_ and _Y_ variables is the key aspect to the paper. 
+In conclusion, multiple regression performs more indepth compare to simple linear regression. Through multiple regression analysis, we were able to use multiple predictors. To answer the questions that are listed on page 75 in the textbook, we had to look through the report as a whole. All the predictors help to explain the response because in order to get an accurate regression you need to take in account the entire data set. The model fits relatviely well with the data. Looking at the different values such as R^2, F-statistics, and RSE values, we can conclude that the prediction is relatively accurate. 
+
