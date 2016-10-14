@@ -66,7 +66,7 @@ pander(regression, caption = "Multiple Regressions on Sales")
 Additionally, we can look at the other values such as R-squared, F-statistics, and residual standard error to determine how "fit" the model is. Looking at the table above, we can see that there is a significance for the relationship between `TV` and `Sales` and `Radio` and `Sales`, due to the small p-values that are shown. However `Newspaper` and `Sales` do not have a significant relationsihp because the large p-value. The $\beta$ values for both `TV` and `Radio` are positive and quite small. We can further look into other statistics.
 
 
-```{r echo = FALSE}
+```{r xtable, results='asis', echo = FALSE}
 source("../code/functions/regression-functions.R")
 library(xtable)
 
